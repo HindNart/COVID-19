@@ -2,8 +2,10 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Virus
+  - Bullet
   layers:
   - Default
   - TransparentFX
@@ -41,3 +43,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: bullet
+    uniqueID: 1407290231
+    locked: 0
+  - name: viruss
+    uniqueID: 1378548213
+    locked: 0
+  - name: player
+    uniqueID: 3968208595
+    locked: 0
+  m_RenderingLayers:
+  - Default
