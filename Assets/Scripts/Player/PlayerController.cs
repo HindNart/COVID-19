@@ -1,11 +1,21 @@
+using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, IUpgradable
 {
+    [SerializeField] private GameObject shield;
     [SerializeField] private GameObject bulletPrefab;
     [SerializeField] private ObjectPool bulletPool;
     [SerializeField] private float baseFireRate = 0.5f;
     [SerializeField] private int bulletDamage = 10;
+    [SerializeField] private float autoFireRadius = 5f;
+    [SerializeField] private LayerMask virusLayer;
+    [SerializeField] private LayerMask powerUpLayer;
+    [SerializeField] private float retreatDistance = 4f;
+    [SerializeField] private float retreatDuration = 0.5f;
+    [SerializeField] private float centerReturnDuration = 0.5f;
+
     private float fireRate;
     private float nextFireTime;
     private int upgradeCost = 100;
@@ -13,6 +23,9 @@ public class PlayerController : MonoBehaviour, IUpgradable
     private int shieldHitsLeft;
     private float speedBoostEndTime;
     private float shieldEndTime;
+    private float nextVirusCheckTime;
+    private float virusCheckInterval = 0.1f;
+    private bool isRetreating;
     private float spinAngle = 0f;
 
     private void Awake()
@@ -20,22 +33,61 @@ public class PlayerController : MonoBehaviour, IUpgradable
         fireRate = baseFireRate;
     }
 
-    private void Update()
+    private void Start()
     {
-        Spin();
-
-        if (Input.GetMouseButton(0) && Time.time > nextFireTime)
+        if (shield != null)
         {
-            Shoot();
-            nextFireTime = Time.time + fireRate;
+            shield.SetActive(false);
         }
 
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.OnBossSpawned.AddListener(RetreatFromBoss);
+            WaveManager.Instance.OnWaveStarted.AddListener(OnWaveStart);
+        }
+    }
+
+    private void Update()
+    {
+        // Xoay nhân vật
+        Spin();
+
+        // Bắn thủ công khi nhấn chuột
+        if (Input.GetMouseButton(0) && Time.time > nextFireTime && !isRetreating)
+        {
+            if (TryClickPowerUp())
+            {
+                // Không bắn đạn nếu click trúng PowerUp
+            }
+            else
+            {
+                Shoot(GetMouseDirection());
+                nextFireTime = Time.time + fireRate;
+            }
+        }
+        // Bắn tự động nếu có virus gần
+        else if (Time.time > nextFireTime && Time.time > nextVirusCheckTime && !isRetreating)
+        {
+            Vector2? autoDirection = GetAutoFireDirection();
+            if (autoDirection.HasValue)
+            {
+                Shoot(autoDirection.Value);
+                nextFireTime = Time.time + fireRate;
+            }
+            nextVirusCheckTime = Time.time + virusCheckInterval;
+        }
+
+        // Kiểm tra hết thời gian power-up
         if (Time.time > speedBoostEndTime)
         {
             fireRate = baseFireRate / (upgradeLevel * 0.9f);
         }
         if (Time.time > shieldEndTime)
         {
+            if (shield != null)
+            {
+                shield.SetActive(false);
+            }
             shieldHitsLeft = 0;
         }
     }
@@ -50,18 +102,131 @@ public class PlayerController : MonoBehaviour, IUpgradable
         }
     }
 
-    private void Shoot()
+    private void OnWaveStart(int wave)
+    {
+        if (wave % 10 != 0)
+        {
+            if (!isRetreating)
+            {
+                StartCoroutine(ReturnToCenterCoroutine());
+            }
+        }
+    }
+
+    private bool TryClickPowerUp()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, powerUpLayer);
+        if (hit.collider != null)
+        {
+            PowerUp powerUp = hit.collider.GetComponent<PowerUp>();
+            if (powerUp != null)
+            {
+                powerUp.TryActivate(gameObject);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Vector2 GetMouseDirection()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousePos.z = 0;
-        Vector3 direction = (mousePos - transform.position).normalized;
+        return (mousePos - transform.position).normalized;
+    }
 
+    private Vector2? GetAutoFireDirection()
+    {
+        // Phát hiện virus trong bán kính
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, autoFireRadius, virusLayer);
+        if (hits.Length == 0) return null;
+
+        // Tìm virus gần nhất
+        Collider2D nearestVirus = null;
+        float minDistance = float.MaxValue;
+        foreach (var hit in hits)
+        {
+            if (hit.CompareTag("Virus"))
+            {
+                float distance = Vector2.Distance(transform.position, hit.transform.position);
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearestVirus = hit;
+                }
+            }
+        }
+
+        if (nearestVirus != null)
+        {
+            return (nearestVirus.transform.position - transform.position).normalized;
+        }
+        return null;
+    }
+
+    private void Shoot(Vector2 direction)
+    {
         GameObject bullet = bulletPool.Get(bulletPrefab);
         bullet.transform.position = transform.position;
+        bullet.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
         bullet.GetComponent<Bullet>().Initialize(bulletDamage, direction);
     }
 
-    public bool CanUpgrade(int resources)
+    private void RetreatFromBoss()
+    {
+        if (!isRetreating)
+        {
+            StartCoroutine(RetreatCoroutine());
+        }
+    }
+
+    private IEnumerator RetreatCoroutine()
+    {
+        isRetreating = true;
+        Vector2 startPos = transform.position;
+        Vector2 targetPos = startPos + Vector2.left * retreatDistance; // Lùi sang trái
+        float elapsedTime = 0f;
+
+        // Giới hạn để không ra ngoài màn hình
+        targetPos.y = Mathf.Max(targetPos.y, -8f);
+
+        while (elapsedTime < retreatDuration)
+        {
+            // transform.position = Vector2.Lerp(startPos, targetPos, elapsedTime / retreatDuration);
+            transform.DOMove(targetPos, retreatDuration).SetEase(Ease.OutQuad);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        isRetreating = false;
+    }
+
+    private IEnumerator ReturnToCenterCoroutine()
+    {
+        isRetreating = true;
+        Vector2 targetPos = Vector2.zero; // Trung tâm (0, 0)
+        float elapsedTime = 0f;
+
+        while (elapsedTime < centerReturnDuration)
+        {
+            // transform.position = Vector2.Lerp(startPos, targetPos, elapsedTime / centerReturnDuration);
+            transform.DOMove(targetPos, centerReturnDuration).SetEase(Ease.OutQuad);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        isRetreating = false;
+    }
+
+    public int GetUpgradeCost()
+    {
+        return upgradeCost;
+    }
+
+    public bool CanUpgrade(float resources)
     {
         return resources >= upgradeCost;
     }
@@ -70,16 +235,17 @@ public class PlayerController : MonoBehaviour, IUpgradable
     {
         GameManager.Instance.AddAntibodies(-upgradeCost);
         upgradeLevel++;
-        bulletDamage += 10;
+        bulletDamage += 5;
         fireRate = baseFireRate / (upgradeLevel * 0.9f);
-        upgradeCost += 50;
+        upgradeCost += 100;
     }
 
-    public void TryUpgrade(int resources)
+    public void TryUpgrade(float resources)
     {
         if (CanUpgrade(resources))
         {
             Upgrade();
+            Debug.Log("Upgrade successful! Current level: " + upgradeLevel);
         }
     }
 
@@ -91,6 +257,10 @@ public class PlayerController : MonoBehaviour, IUpgradable
 
     public void ApplyShield(int hits, float duration)
     {
+        if (shield != null)
+        {
+            shield.SetActive(true);
+        }
         shieldHitsLeft = hits;
         shieldEndTime = Time.time + duration;
     }
@@ -106,5 +276,12 @@ public class PlayerController : MonoBehaviour, IUpgradable
         {
             shieldHitsLeft--;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Vẽ bán kính phát hiện virus
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, autoFireRadius);
     }
 }

@@ -6,15 +6,14 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     public int PlayerHP { get; private set; } = 100;
-    public int Antibodies { get; private set; } = 0;
-    public int CurrentWave => waveManager.CurrentWave;
+    public float Antibodies { get; private set; } = 0;
+    public int CurrentWave => WaveManager.Instance.CurrentWave;
 
-    public UnityEvent<int> OnAntibodiesChanged = new UnityEvent<int>();
+    public UnityEvent<float> OnAntibodiesChanged = new UnityEvent<float>();
     public UnityEvent<int> OnPlayerHPChanged = new UnityEvent<int>();
     public UnityEvent OnGameOver = new UnityEvent();
 
     [SerializeField] private PlayerController player;
-    [SerializeField] private WaveManager waveManager;
     [SerializeField] private GameObject[] powerUpPrefabs;
 
     private void Awake()
@@ -38,15 +37,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void AddAntibodies(int amount)
+    public void AddAntibodies(float amount)
     {
         Antibodies += amount;
         OnAntibodiesChanged.Invoke(Antibodies);
-
-        if (Random.value < 0.05f) // 5% drop power-up
-        {
-            SpawnPowerUp((Vector2)player.transform.position + Random.insideUnitCircle * 3f);
-        }
     }
 
     public void TakePlayerDamage(int damage)
@@ -80,7 +74,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void SpawnPowerUp(Vector2 position)
+    public void SpawnPowerUp(Vector2 position)
     {
         if (powerUpPrefabs.Length > 0)
         {

@@ -4,29 +4,60 @@ using System.Collections.Generic;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance { get; private set; }
+
     [SerializeField] private VirusFactory virusFactory;
     [SerializeField] private ObjectPool objectPool;
-    [SerializeField] private float waveInterval = 30f;
-    [SerializeField] private float spawnInterval = 1f;
-    [SerializeField] private int baseVirusCount = 5;
-    [SerializeField] private float difficultyIncrease = 0.1f;
+    [SerializeField] private float waveInterval = 15f;
+    [SerializeField] private float spawnInterval = 1.5f;
+    [SerializeField] private int baseVirusCount = 25;
+    [SerializeField] private float difficultyIncrease = 0.5f;
 
     public int CurrentWave { get; private set; } = 0;
     public UnityEvent<int> OnWaveStarted = new UnityEvent<int>();
-    public UnityEvent<int> OnWaveEnded = new UnityEvent<int>();
+    // public UnityEvent<int> OnWaveEnded = new UnityEvent<int>();
+    public UnityEvent<float> OnWaveTimeUpdated = new UnityEvent<float>();
+    public UnityEvent OnBossSpawned = new UnityEvent();
 
     private bool isWaveActive;
     private Queue<Vector2> spawnQueue = new Queue<Vector2>();
     private float nextWaveTime;
     private float nextSpawnTime;
+    private float timeLeft;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     private void Start()
     {
         nextWaveTime = Time.time + waveInterval;
+        timeLeft = waveInterval;
+        OnWaveTimeUpdated.Invoke(timeLeft);
     }
 
     private void Update()
     {
+        if (isWaveActive)
+        {
+            timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
+            OnWaveTimeUpdated.Invoke(timeLeft);
+        }
+        else if (!isWaveActive && timeLeft > 0)
+        {
+            timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
+            OnWaveTimeUpdated.Invoke(timeLeft);
+        }
+
         if (!isWaveActive && Time.time >= nextWaveTime)
         {
             StartWave();
@@ -48,9 +79,11 @@ public class WaveManager : MonoBehaviour
     {
         CurrentWave++;
         isWaveActive = true;
+        timeLeft = waveInterval;
         OnWaveStarted.Invoke(CurrentWave);
+        OnWaveTimeUpdated.Invoke(timeLeft);
 
-        int virusCount = Mathf.RoundToInt(baseVirusCount + CurrentWave * 2);
+        int virusCount = CurrentWave % 10 == 0 ? 1 : Mathf.RoundToInt(baseVirusCount + CurrentWave * 2);
         float hpMultiplier = 1f + CurrentWave * difficultyIncrease;
         float speedMultiplier = 1f + CurrentWave * difficultyIncrease * 0.5f;
 
@@ -60,7 +93,15 @@ public class WaveManager : MonoBehaviour
             spawnQueue.Enqueue(GetSpawnPosition(CurrentWave));
         }
 
-        virusFactory.SetWaveParameters(hpMultiplier, speedMultiplier);
+        if (CurrentWave % 10 == 0)
+        {
+            OnBossSpawned.Invoke();
+        }
+
+        if (virusFactory != null)
+        {
+            virusFactory.SetWaveParameters(hpMultiplier, speedMultiplier);
+        }
     }
 
     private void SpawnVirus()
@@ -76,30 +117,26 @@ public class WaveManager : MonoBehaviour
     {
         isWaveActive = false;
         nextWaveTime = Time.time + waveInterval;
-        OnWaveEnded.Invoke(CurrentWave);
+        timeLeft = waveInterval;
+        // OnWaveEnded.Invoke(CurrentWave);
+        OnWaveTimeUpdated.Invoke(timeLeft);
     }
 
     private Vector2 GetSpawnPosition(int wave)
     {
         float rand = Random.value;
+        Vector2 screenBounds = Camera.main.ScreenToWorldPoint(new Vector2(Screen.width, Screen.height));
+
         if (wave % 10 == 0) // Wave boss
         {
-            if (rand < 0.25f) return new Vector2(Random.Range(-8f, 8f), 6f);
-            else if (rand < 0.5f) return new Vector2(Random.Range(-8f, 8f), -6f);
-            else if (rand < 0.75f) return new Vector2(-8f, Random.Range(-6f, 6f));
-            else return new Vector2(8f, Random.Range(-6f, 6f));
-        }
-        else if (wave > 5) // Wave trung cấp
-        {
-            float x = Random.Range(-8f, 8f);
-            return Random.value < 0.5f ? new Vector2(x, 6f) : new Vector2(x, -6f);
+            return new Vector2(screenBounds.x, 0);
         }
         else // Wave cơ bản
         {
-            if (rand < 0.25f) return new Vector2(Random.Range(-8f, 8f), 6f);
-            else if (rand < 0.5f) return new Vector2(Random.Range(-8f, 8f), -6f);
-            else if (rand < 0.75f) return new Vector2(-8f, Random.Range(-6f, 6f));
-            else return new Vector2(8f, Random.Range(-6f, 6f));
+            if (rand < 0.2f) return new Vector2(Random.Range(-screenBounds.x, screenBounds.x), screenBounds.y);
+            else if (rand < 0.4f) return new Vector2(Random.Range(-screenBounds.x, screenBounds.x), -screenBounds.y);
+            else if (rand < 0.7f) return new Vector2(-screenBounds.x, Random.Range(-screenBounds.y, screenBounds.y));
+            else return new Vector2(screenBounds.x, Random.Range(-screenBounds.y, screenBounds.y));
         }
     }
 

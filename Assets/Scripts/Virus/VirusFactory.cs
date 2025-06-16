@@ -3,7 +3,10 @@ using UnityEngine;
 public class VirusFactory : MonoBehaviour
 {
     [SerializeField] private GameObject basicVirusPrefab;
+    [SerializeField] private GameObject intermediateVirusPrefab;
+    [SerializeField] private GameObject advancedVirusPrefab;
     [SerializeField] private GameObject omicronVirusPrefab;
+    [SerializeField] private GameObject bossVirusPrefab;
     [SerializeField] private Transform player;
     [SerializeField] private ObjectPool objectPool;
 
@@ -20,17 +23,45 @@ public class VirusFactory : MonoBehaviour
     {
         GameObject virusObj;
         VirusBase virus;
-        int baseHp = 50;
-        int basePoints = 10;
-        float baseSpeed = 3f;
 
-        if (wave >= 10 && Random.value < 0.3f)
+        int baseHp = 10;
+        float basePoints = 1;
+        float baseSpeed = 0.5f;
+
+        // wave boss
+        if (wave % 10 == 0)
+        {
+            virusObj = objectPool.Get(bossVirusPrefab);
+            virus = virusObj.GetComponent<BossVirus>();
+            baseHp *= 50;
+            basePoints *= 2f;
+            baseSpeed *= 0.25f;
+        }
+        // omicron virus
+        else if (wave > 10 && Random.value < 0.15f)
         {
             virusObj = objectPool.Get(omicronVirusPrefab);
             virus = virusObj.GetComponent<OmicronVirus>();
             baseHp *= 2;
-            basePoints *= 2;
+            basePoints *= 1.3f;
         }
+        // advanced virus
+        else if (wave > 15 && Random.value < 0.3f)
+        {
+            virusObj = objectPool.Get(advancedVirusPrefab);
+            virus = virusObj.GetComponent<BasicVirus>();
+            baseHp *= 3;
+            basePoints *= 1.3f;
+        }
+        // intermediate virus
+        else if (wave > 5 && Random.value < 0.5f)
+        {
+            virusObj = objectPool.Get(intermediateVirusPrefab);
+            virus = virusObj.GetComponent<BasicVirus>();
+            baseHp *= 2;
+            basePoints *= 1.1f;
+        }
+        // basic virus
         else
         {
             virusObj = objectPool.Get(basicVirusPrefab);
@@ -38,7 +69,7 @@ public class VirusFactory : MonoBehaviour
         }
 
         virusObj.transform.position = spawnPos;
-        virus.Initialize((int)(baseHp * hpMultiplier), (int)(basePoints * hpMultiplier), baseSpeed * speedMultiplier, player, objectPool);
+        virus.Initialize((int)(baseHp * hpMultiplier), basePoints * (hpMultiplier / 3f), baseSpeed * speedMultiplier, player, objectPool);
         return virus;
     }
 }

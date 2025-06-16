@@ -7,7 +7,7 @@ public class OmicronVirus : VirusBase
     private float dodgeTimer;
     private Vector2 dodgeDirection;
 
-    public override void Initialize(int health, int reward, float spd, Transform tgt, ObjectPool objectPool)
+    public override void Initialize(int health, float reward, float spd, Transform tgt, ObjectPool objectPool)
     {
         base.Initialize(health, reward, spd, tgt, objectPool);
         dodgeTimer = 0f;
