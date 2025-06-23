@@ -52,7 +52,7 @@ public class PowerUp : MonoBehaviour
                 playerController.ApplySpeedBoost(2f, duration);
                 break;
             case PowerUpType.Shield:
-                playerController.ApplyShield(3, duration);
+                playerController.ApplyShield(duration);
                 break;
             case PowerUpType.Explosion:
                 GameManager.Instance.TriggerExplosion();
@@ -61,8 +61,9 @@ public class PowerUp : MonoBehaviour
                     GameObject effect = pool.Get(explosionEffectPrefab);
                     effect.transform.position = Vector2.zero; // Nổ tại trung tâm
                     ParticleSystem ps = effect.GetComponent<ParticleSystem>();
-                    // ps.Play();
-                    StartCoroutine(ReturnEffectToPool(effect, ps.main.duration));
+                    ps.Play();
+                    // Chạy Coroutine trên ObjectPool để tránh gián đoạn
+                    pool.StartCoroutine(ReturnEffectToPool(effect, ps.main.duration));
                 }
                 break;
         }

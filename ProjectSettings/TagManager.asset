@@ -6,11 +6,12 @@ TagManager:
   tags:
   - Virus
   - Bullet
+  - PowerUp
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Player
   - Water
   - UI
   - Virus

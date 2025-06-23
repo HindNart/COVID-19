@@ -50,14 +50,23 @@ public abstract class VirusBase : MonoBehaviour, IDamageable
 
     public virtual void Die()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("VirusDeath");
+        }
+
         // Phát Particle System hiệu ứng chết
-        if (deathEffectPrefab != null)
+        if (deathEffectPrefab != null && pool != null)
         {
             GameObject effect = pool.Get(deathEffectPrefab);
-            effect.transform.position = transform.position;
-            // ParticleSystem ps = effect.GetComponent<ParticleSystem>();
-            // ps.Play();
-            StartCoroutine(ReturnEffectToPool(effect));
+            if (effect != null)
+            {
+                effect.transform.position = transform.position;
+                ParticleSystem ps = effect.GetComponent<ParticleSystem>();
+                ps.Play();
+                // Chạy Coroutine trên ObjectPool để tránh gián đoạn
+                pool.StartCoroutine(ReturnEffectToPool(effect, ps.main.duration));
+            }
         }
 
         // Trả Particle System vệt di chuyển về pool
@@ -67,16 +76,16 @@ public abstract class VirusBase : MonoBehaviour, IDamageable
             pool.Return(trailEffect.gameObject);
         }
 
+        pool.Return(gameObject);
+
         GameManager.Instance.AddAntibodies(points);
         if (Random.value < 0.05f) // 5% drop power-up
         {
             GameManager.Instance.SpawnPowerUp(transform.position);
         }
-
-        pool.Return(gameObject);
     }
 
-    protected IEnumerator ReturnEffectToPool(GameObject effect, float delay = 1f)
+    protected IEnumerator ReturnEffectToPool(GameObject effect, float delay)
     {
         yield return new WaitForSeconds(delay);
         pool.Return(effect);

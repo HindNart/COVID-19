@@ -1,3 +1,5 @@
+using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -5,6 +7,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    public readonly int maxPlayerHP = 100;
     public int PlayerHP { get; private set; } = 100;
     public float Antibodies { get; private set; } = 0;
     public int CurrentWave => WaveManager.Instance.CurrentWave;
@@ -29,44 +32,56 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            player.TryUpgrade(Antibodies);
-        }
-    }
-
     public void AddAntibodies(float amount)
     {
         Antibodies += amount;
-        OnAntibodiesChanged.Invoke(Antibodies);
+        OnAntibodiesChanged?.Invoke(Antibodies);
     }
 
     public void TakePlayerDamage(int damage)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("VirusAtk");
+        }
+
         if (player.HasShield())
         {
-            player.ConsumeShieldHit();
             return;
         }
 
         PlayerHP = Mathf.Max(0, PlayerHP - damage);
-        OnPlayerHPChanged.Invoke(PlayerHP);
+        OnPlayerHPChanged?.Invoke(PlayerHP);
         if (PlayerHP <= 0)
         {
-            OnGameOver.Invoke();
+            StartCoroutine(WaitForGameOver());
         }
+    }
+
+    private IEnumerator WaitForGameOver()
+    {
+        yield return new WaitForSeconds(0.5f);
+        OnGameOver?.Invoke();
     }
 
     public void HealPlayer(int amount)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("Heal");
+        }
+
         PlayerHP = Mathf.Min(100, PlayerHP + amount);
-        OnPlayerHPChanged.Invoke(PlayerHP);
+        OnPlayerHPChanged?.Invoke(PlayerHP);
     }
 
     public void TriggerExplosion()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("Explosion");
+        }
+
         VirusBase[] viruses = FindObjectsOfType<VirusBase>();
         foreach (var virus in viruses)
         {
@@ -84,3 +99,9 @@ public class GameManager : MonoBehaviour
         }
     }
 }
+
+
+
+
+// tạo thêm list boss
+// màn boss cập nhật lại

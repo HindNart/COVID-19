@@ -11,7 +11,6 @@ public class PlayerController : MonoBehaviour, IUpgradable
     [SerializeField] private int bulletDamage = 10;
     [SerializeField] private float autoFireRadius = 5f;
     [SerializeField] private LayerMask virusLayer;
-    [SerializeField] private LayerMask powerUpLayer;
     [SerializeField] private float retreatDistance = 4f;
     [SerializeField] private float retreatDuration = 0.5f;
     [SerializeField] private float centerReturnDuration = 0.5f;
@@ -20,13 +19,14 @@ public class PlayerController : MonoBehaviour, IUpgradable
     private float nextFireTime;
     private int upgradeCost = 100;
     private int upgradeLevel = 1;
-    private int shieldHitsLeft;
+    // private int shieldHitsLeft;
     private float speedBoostEndTime;
     private float shieldEndTime;
     private float nextVirusCheckTime;
     private float virusCheckInterval = 0.1f;
     private bool isRetreating;
     private float spinAngle = 0f;
+    private Tween scaleTween;
 
     private void Awake()
     {
@@ -45,6 +45,8 @@ public class PlayerController : MonoBehaviour, IUpgradable
             WaveManager.Instance.OnBossSpawned.AddListener(RetreatFromBoss);
             WaveManager.Instance.OnWaveStarted.AddListener(OnWaveStart);
         }
+
+        GameManager.Instance.OnAntibodiesChanged.AddListener(UpdateUpgradeEffect);
     }
 
     private void Update()
@@ -57,7 +59,7 @@ public class PlayerController : MonoBehaviour, IUpgradable
         {
             if (TryClickPowerUp())
             {
-                // Không bắn đạn nếu click trúng PowerUp
+                return;
             }
             else
             {
@@ -88,7 +90,7 @@ public class PlayerController : MonoBehaviour, IUpgradable
             {
                 shield.SetActive(false);
             }
-            shieldHitsLeft = 0;
+            // shieldHitsLeft = 0;
         }
     }
 
@@ -99,6 +101,20 @@ public class PlayerController : MonoBehaviour, IUpgradable
         if (spinAngle <= -360f)
         {
             spinAngle = 0f;
+        }
+    }
+
+    private void UpdateUpgradeEffect(float antibodies)
+    {
+        if (CanUpgrade(antibodies) && scaleTween == null)
+        {
+            scaleTween = transform.DOScale(0.5f, 0.5f).SetLoops(-1, LoopType.Yoyo).SetEase(Ease.InOutSine);
+        }
+        else if (!CanUpgrade(antibodies) && scaleTween != null)
+        {
+            scaleTween.Kill();
+            scaleTween = null;
+            transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
         }
     }
 
@@ -116,13 +132,21 @@ public class PlayerController : MonoBehaviour, IUpgradable
     private bool TryClickPowerUp()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, powerUpLayer);
+        RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("Player", "PowerUp"));
         if (hit.collider != null)
         {
-            PowerUp powerUp = hit.collider.GetComponent<PowerUp>();
-            if (powerUp != null)
+            if (hit.collider.CompareTag("Player"))
             {
-                powerUp.TryActivate(gameObject);
+                TryUpgrade(GameManager.Instance.Antibodies);
+                return true;
+            }
+            else if (hit.collider.CompareTag("PowerUp"))
+            {
+                // Kiểm tra xem có trúng PowerUp không
+                if (hit.collider.TryGetComponent<PowerUp>(out var powerUp))
+                {
+                    powerUp.TryActivate(gameObject);
+                }
                 return true;
             }
         }
@@ -167,6 +191,11 @@ public class PlayerController : MonoBehaviour, IUpgradable
 
     private void Shoot(Vector2 direction)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("Shoot");
+        }
+
         GameObject bullet = bulletPool.Get(bulletPrefab);
         bullet.transform.position = transform.position;
         bullet.transform.rotation = Quaternion.LookRotation(Vector3.forward, direction);
@@ -233,11 +262,17 @@ public class PlayerController : MonoBehaviour, IUpgradable
 
     public void Upgrade()
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("Upgrade");
+        }
+
         GameManager.Instance.AddAntibodies(-upgradeCost);
         upgradeLevel++;
         bulletDamage += 5;
         fireRate = baseFireRate / (upgradeLevel * 0.9f);
         upgradeCost += 100;
+        UpdateUpgradeEffect(GameManager.Instance.Antibodies);
     }
 
     public void TryUpgrade(float resources)
@@ -247,41 +282,64 @@ public class PlayerController : MonoBehaviour, IUpgradable
             Upgrade();
             Debug.Log("Upgrade successful! Current level: " + upgradeLevel);
         }
+        else
+        {
+            Debug.Log("Not enough resources to upgrade. Current resources: " + resources);
+        }
     }
 
     public void ApplySpeedBoost(float multiplier, float duration)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("Boost");
+        }
+
         fireRate = baseFireRate / (upgradeLevel * 0.9f * multiplier);
         speedBoostEndTime = Time.time + duration;
     }
 
-    public void ApplyShield(int hits, float duration)
+    public void ApplyShield(float duration)
     {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("Shield");
+        }
+
         if (shield != null)
         {
             shield.SetActive(true);
         }
-        shieldHitsLeft = hits;
+        // shieldHitsLeft = hits;
         shieldEndTime = Time.time + duration;
     }
 
     public bool HasShield()
     {
-        return shieldHitsLeft > 0;
+        return shield.activeSelf;
     }
 
-    public void ConsumeShieldHit()
-    {
-        if (shieldHitsLeft > 0)
-        {
-            shieldHitsLeft--;
-        }
-    }
+    // public void ConsumeShieldHit()
+    // {
+    //     if (shieldHitsLeft > 0)
+    //     {
+    //         shieldHitsLeft--;
+    //     }
+    // }
 
     private void OnDrawGizmos()
     {
         // Vẽ bán kính phát hiện virus
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, autoFireRadius);
+    }
+
+    private void OnDestroy()
+    {
+        if (scaleTween != null)
+        {
+            scaleTween.Kill();
+            scaleTween = null;
+        }
     }
 }

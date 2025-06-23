@@ -152,7 +152,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!114 &4110595243585482767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,4 +168,5 @@ MonoBehaviour:
   deathEffectPrefab: {fileID: 5058648717534268900, guid: ed8e3c22571cfac4f81dd668b1071854, type: 3}
   trailEffectPrefab: {fileID: 1216999879092924285, guid: 7a32e684be517fe48bba0bd2e64ecade, type: 3}
   minionPrefab: {fileID: 8624028717138345242, guid: 8e5c8b86190466a49a099c7057224406, type: 3}
-  minionSpawnInterval: 10
+  minionSpawnInterval: 15
+  lowHPThreshold: 0.3

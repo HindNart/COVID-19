@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 5650975578460610427}
   - component: {fileID: 6256018512865908346}
   - component: {fileID: 2522399881615227087}
+  - component: {fileID: 8440985051211426495}
   - component: {fileID: 4679845639332940520}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Earth
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -126,6 +127,43 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
   m_Radius: 2.5
+--- !u!70 &8440985051211426495
+CapsuleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3276906300112021553}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_Size: {x: 4, y: 4}
+  m_Direction: 0
 --- !u!114 &4679845639332940520
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,7 +177,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shield: {fileID: 3699108151485494072}
-  moveTrailEffectPrefab: {fileID: 4865675775789059769, guid: 5b03ea9886e47eb47b7f78c98cf612b1, type: 3}
   bulletPrefab: {fileID: 1381980902393243134, guid: 28d169a2f49993545a89b878b6b37c55, type: 3}
   bulletPool: {fileID: 0}
   baseFireRate: 0.5
@@ -148,9 +185,6 @@ MonoBehaviour:
   virusLayer:
     serializedVersion: 2
     m_Bits: 64
-  powerUpLayer:
-    serializedVersion: 2
-    m_Bits: 128
   retreatDistance: 4
   retreatDuration: 0.5
   centerReturnDuration: 0.5

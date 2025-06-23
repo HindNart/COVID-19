@@ -15,7 +15,8 @@ public class WaveManager : MonoBehaviour
 
     public int CurrentWave { get; private set; } = 0;
     public UnityEvent<int> OnWaveStarted = new UnityEvent<int>();
-    // public UnityEvent<int> OnWaveEnded = new UnityEvent<int>();
+    public UnityEvent OnWaveEnded = new UnityEvent();
+    public UnityEvent OnWaveIntervalEnded = new UnityEvent();
     public UnityEvent<float> OnWaveTimeUpdated = new UnityEvent<float>();
     public UnityEvent OnBossSpawned = new UnityEvent();
 
@@ -42,36 +43,44 @@ public class WaveManager : MonoBehaviour
     {
         nextWaveTime = Time.time + waveInterval;
         timeLeft = waveInterval;
-        OnWaveTimeUpdated.Invoke(timeLeft);
+        OnWaveTimeUpdated?.Invoke(timeLeft);
     }
 
     private void Update()
     {
-        if (isWaveActive)
-        {
-            timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
-            OnWaveTimeUpdated.Invoke(timeLeft);
-        }
-        else if (!isWaveActive && timeLeft > 0)
-        {
-            timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
-            OnWaveTimeUpdated.Invoke(timeLeft);
-        }
+        // if (isWaveActive)
+        // {
+        //     timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
+        //     OnWaveTimeUpdated?.Invoke(timeLeft);
+        // }
+        // else if (!isWaveActive && timeLeft > 0)
+        // {
+        //     timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
+        //     OnWaveTimeUpdated?.Invoke(timeLeft);
+        // }
 
-        if (!isWaveActive && Time.time >= nextWaveTime)
-        {
-            StartWave();
-        }
+        timeLeft = Mathf.Max(0, nextWaveTime - Time.time);
+        OnWaveTimeUpdated?.Invoke(timeLeft);
 
-        if (isWaveActive && Time.time >= nextSpawnTime && spawnQueue.Count > 0)
+        if (!isWaveActive)
         {
-            SpawnVirus();
-            nextSpawnTime = Time.time + spawnInterval;
+            if (Time.time >= nextWaveTime)
+            {
+                OnWaveIntervalEnded?.Invoke();
+                StartWave();
+            }
         }
-
-        if (isWaveActive && spawnQueue.Count == 0 && !AnyVirusActive())
+        else if (isWaveActive)
         {
-            EndWave();
+            if (Time.time >= nextSpawnTime && spawnQueue.Count > 0)
+            {
+                SpawnVirus();
+                nextSpawnTime = Time.time + spawnInterval;
+            }
+            else if (spawnQueue.Count == 0 && !AnyVirusActive())
+            {
+                EndWave();
+            }
         }
     }
 
@@ -79,9 +88,8 @@ public class WaveManager : MonoBehaviour
     {
         CurrentWave++;
         isWaveActive = true;
-        timeLeft = waveInterval;
-        OnWaveStarted.Invoke(CurrentWave);
-        OnWaveTimeUpdated.Invoke(timeLeft);
+        // timeLeft = waveInterval;
+        OnWaveStarted?.Invoke(CurrentWave);
 
         int virusCount = CurrentWave % 10 == 0 ? 1 : Mathf.RoundToInt(baseVirusCount + CurrentWave * 2);
         float hpMultiplier = 1f + CurrentWave * difficultyIncrease;
@@ -95,7 +103,12 @@ public class WaveManager : MonoBehaviour
 
         if (CurrentWave % 10 == 0)
         {
-            OnBossSpawned.Invoke();
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX("BossSpawn");
+            }
+
+            OnBossSpawned?.Invoke();
         }
 
         if (virusFactory != null)
@@ -117,9 +130,8 @@ public class WaveManager : MonoBehaviour
     {
         isWaveActive = false;
         nextWaveTime = Time.time + waveInterval;
-        timeLeft = waveInterval;
-        // OnWaveEnded.Invoke(CurrentWave);
-        OnWaveTimeUpdated.Invoke(timeLeft);
+        // timeLeft = waveInterval;
+        OnWaveEnded?.Invoke();
     }
 
     private Vector2 GetSpawnPosition(int wave)

@@ -1,4 +1,5 @@
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,16 +9,26 @@ public class BossVirus : VirusBase
     public static UnityEvent onBossDefeated = new UnityEvent();
     [SerializeField] private GameObject minionPrefab; // BasicVirus prefab
     // [SerializeField] private float shootInterval = 3f;
-    [SerializeField] private float minionSpawnInterval = 10f;
+    [SerializeField] private float minionSpawnInterval = 15f;
     // [SerializeField] private float bulletSpeed = 5f;
+    [SerializeField] private float lowHPThreshold = 0.3f;
     // private float nextShootTime;
     private float nextMinionSpawnTime;
+    private int MaxHP => hp; // Lấy max HP từ VirusBase
+    private SpriteRenderer spriteRenderer;
+    private Tween flashTween;
+
+    private void Awake()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>(); // Lấy SpriteRenderer
+    }
 
     public override void Initialize(int health, float reward, float spd, Transform tgt, ObjectPool objectPool)
     {
         base.Initialize(health, reward, spd, tgt, objectPool);
         // nextShootTime = Time.time + shootInterval;
         nextMinionSpawnTime = Time.time + minionSpawnInterval;
+        spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
 
     protected override void Update()
@@ -69,7 +80,7 @@ public class BossVirus : VirusBase
     {
         if (pool == null || minionPrefab == null) yield return null;
 
-        int minionCount = Random.Range(5, 10); // 5-10 minion
+        int minionCount = Random.Range(10, 15); // 10-15 minion
         for (int i = 0; i < minionCount; i++)
         {
             GameObject minion = pool.Get(minionPrefab);
@@ -80,11 +91,67 @@ public class BossVirus : VirusBase
         }
     }
 
+    public new void TakeDamage(int damage)
+    {
+        hp -= damage;
+
+        // Kiểm tra HP để kích hoạt/hủy nhấp nháy
+        float hpRatio = (float)hp / MaxHP;
+        if (hpRatio <= lowHPThreshold && flashTween == null)
+        {
+            StartFlashing();
+        }
+        else if (hpRatio > lowHPThreshold && flashTween != null)
+        {
+            StopFlashing();
+        }
+
+        if (hp <= 0)
+        {
+            Die();
+        }
+    }
+
     public override void Die()
     {
+        // Hủy nhấp nháy trước khi chết
+        StopFlashing();
+
         base.Die();
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("BossDeath");
+        }
+
         // Thông báo Boss bị tiêu diệt
-        onBossDefeated.Invoke();
+        onBossDefeated?.Invoke();
+    }
+
+    private void StartFlashing()
+    {
+        if (spriteRenderer == null) return;
+
+        // Tạo Tween nhấp nháy
+        flashTween = spriteRenderer.DOFade(0.5f, 0.5f)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
+    }
+
+    private void StopFlashing()
+    {
+        if (flashTween != null)
+        {
+            flashTween.Kill(); // Hủy Tween
+            flashTween = null;
+            spriteRenderer.color = new Color(1f, 1f, 1f, 1f); // Reset alpha
+        }
+    }
+
+    private void OnDisable()
+    {
+        // Hủy Tween khi Boss bị vô hiệu hóa
+        StopFlashing();
     }
 }
 
