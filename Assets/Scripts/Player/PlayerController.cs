@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour, IUpgradable
         // Kiểm tra hết thời gian power-up
         if (Time.time > speedBoostEndTime)
         {
-            fireRate = baseFireRate / (upgradeLevel * 0.7f);
+            fireRate = baseFireRate / (upgradeLevel * 0.9f);
         }
         if (Time.time > shieldEndTime)
         {

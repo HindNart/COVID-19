@@ -14,6 +14,7 @@ public class BossVirus : VirusBase
     [SerializeField] private float lowHPThreshold = 0.3f;
     // private float nextShootTime;
     private float nextMinionSpawnTime;
+    private float stopDistance = 10f;
     private int MaxHP => hp; // Lấy max HP từ VirusBase
     private SpriteRenderer spriteRenderer;
     private Tween flashTween;
@@ -52,7 +53,6 @@ public class BossVirus : VirusBase
     {
         if (target == null) return;
 
-        float stopDistance = 6f;
         float distance = Vector2.Distance(transform.position, target.position);
 
         if (distance > stopDistance)
