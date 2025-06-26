@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour, IUpgradable
         // Kiểm tra hết thời gian power-up
         if (Time.time > speedBoostEndTime)
         {
-            fireRate = baseFireRate / (upgradeLevel * 0.9f);
+            fireRate = baseFireRate / (upgradeLevel * 0.7f);
         }
         if (Time.time > shieldEndTime)
         {
@@ -270,7 +270,7 @@ public class PlayerController : MonoBehaviour, IUpgradable
         GameManager.Instance.AddAntibodies(-upgradeCost);
         upgradeLevel++;
         bulletDamage += 5;
-        fireRate = baseFireRate / (upgradeLevel * 0.9f);
+        fireRate = baseFireRate / (upgradeLevel * 0.7f);
         upgradeCost += 100;
         UpdateUpgradeEffect(GameManager.Instance.Antibodies);
     }

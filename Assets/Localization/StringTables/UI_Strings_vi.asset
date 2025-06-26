@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Strings_vi
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: vi
+  m_SharedData: {fileID: 11400000, guid: 9fde3cf85411380438ed81ddc63d9a8b, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 257573310464
+    m_Localized: "Ch\u01A1i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 318503964672
+    m_Localized: "Tho\xE1t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 367782842368
+    m_Localized: "Kh\xE1ng th\u1EC3: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 688684847104
+    m_Localized: "\u0110\u1EE3t: {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 792133160960
+    m_Localized: "N\xE2ng c\u1EA5p (Nh\u1EA5n v\xE0o Earth): {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1297651650560
+    m_Localized: "N\xE2ng c\u1EA5p (Kh\xF4ng \u0111\u1EE7): {0}"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1402651856896
+    m_Localized: "Boss \u0110ang T\u1EDBi!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1457404301312
+    m_Localized: "\u0110\xE1nh B\u1EA1i Boss!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1765870194688
+    m_Localized: "B\u1EAFt \u0111\u1EA7u \u0111\u1EE3t t\u1EA5n c\xF4ng!"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2063145684992
+    m_Localized: "Tr\xE1i \u0110\u1EA5t \u0111\xE3 b\u1ECB nhi\u1EC5m COVID (T_T)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2436841394176
+    m_Localized: "Ch\u01A1i l\u1EA1i"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2773048414208
+    m_Localized: "T\u1EA1m d\u1EEBng"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2903680012288
+    m_Localized: "Ti\u1EBFp t\u1EE5c"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3137390825472
+    m_Localized: "Tho\xE1t"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7953953378304
+    m_Localized: "Ng\xF4n ng\u1EEF"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8164209643520
+    m_Localized: "Ti\u1EBFng Anh"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8264369623040
+    m_Localized: "Ti\u1EBFng Vi\u1EC7t"
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

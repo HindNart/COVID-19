@@ -4,6 +4,8 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using DG.Tweening;
+using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,16 +13,33 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private TextMeshProUGUI timeText;
     [SerializeField] private TextMeshProUGUI upgradeCostText;
-    // [SerializeField] private Button upgradeButton;
     [SerializeField] private TextMeshProUGUI notificationText;
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
     [SerializeField] private Slider playerHPSlider;
-
     [SerializeField] private PlayerController player;
+
+    [SerializeField] private LocalizedString antibodiesString;
+    [SerializeField] private LocalizedString waveString;
+    [SerializeField] private LocalizedString upgradeCostCanUpgradeString;
+    [SerializeField] private LocalizedString upgradeCostNotEnoughString;
+    [SerializeField] private LocalizedString bossIncomingString;
+    [SerializeField] private LocalizedString bossDefeatedString;
+    [SerializeField] private LocalizedString waveStartingString;
+
+    private LocalizeStringEvent antibodiesTextLocalize;
+    private LocalizeStringEvent waveTextLocalize;
+    private LocalizeStringEvent upgradeCostTextLocalize;
+    private LocalizeStringEvent notificationTextLocalize;
 
     private void Start()
     {
+        // Gán LocalizedString vào LocalizeStringEvent
+        antibodiesTextLocalize = antibodiesText.GetComponent<LocalizeStringEvent>();
+        waveTextLocalize = waveText.GetComponent<LocalizeStringEvent>();
+        upgradeCostTextLocalize = upgradeCostText.GetComponent<LocalizeStringEvent>();
+        notificationTextLocalize = notificationText.GetComponent<LocalizeStringEvent>();
+
         // Khởi tạo UI
         UpdateHP(GameManager.Instance.PlayerHP);
         UpdateAntibodies(GameManager.Instance.Antibodies);
@@ -63,13 +82,17 @@ public class UIManager : MonoBehaviour
 
     private void UpdateAntibodies(float antibodies)
     {
-        antibodiesText.text = $"Antibodies: {Mathf.Round(antibodies)}";
+        antibodiesTextLocalize.StringReference = antibodiesString;
+        antibodiesTextLocalize.StringReference.Arguments = new object[] { Mathf.Round(antibodies) };
+        antibodiesTextLocalize.RefreshString();
         UpdateUpgradeCost();
     }
 
     private void UpdateWave(int wave)
     {
-        waveText.text = $"Wave: {wave}";
+        waveTextLocalize.StringReference = waveString;
+        waveTextLocalize.StringReference.Arguments = new object[] { wave };
+        waveTextLocalize.RefreshString();
     }
 
     private void UpdateWaveTime(float timeRemaining)
@@ -89,20 +112,18 @@ public class UIManager : MonoBehaviour
     {
         timeText.gameObject.SetActive(false);
         timeText.transform.DOScale(Vector3.zero, 0.5f).SetEase(Ease.InBack);
-        StartCoroutine(DisplayNotification("Wave Starting!", 2f));
+        notificationTextLocalize.StringReference = waveStartingString;
+        notificationTextLocalize.RefreshString();
+        StartCoroutine(DisplayNotification(2f));
     }
 
     private void UpdateUpgradeCost()
     {
         bool canUpgrade = player.CanUpgrade(GameManager.Instance.Antibodies);
-        upgradeCostText.text = $"Upgrade ({(canUpgrade ? "Click Earth" : "Not Enough")}): {player.GetUpgradeCost()}";
-        // upgradeButton.interactable = canUpgrade;
+        upgradeCostTextLocalize.StringReference = canUpgrade ? upgradeCostCanUpgradeString : upgradeCostNotEnoughString;
+        upgradeCostTextLocalize.StringReference.Arguments = new object[] { player.GetUpgradeCost() };
+        upgradeCostTextLocalize.RefreshString();
     }
-
-    // private void OnUpgradeButtonClicked()
-    // {
-    //     player.TryUpgrade(GameManager.Instance.Antibodies);
-    // }
 
     private void ShowGameOver()
     {
@@ -118,17 +139,20 @@ public class UIManager : MonoBehaviour
 
     private void ShowBossWarning()
     {
-        StartCoroutine(DisplayNotification("Boss Incoming!", 3f));
+        notificationTextLocalize.StringReference = bossIncomingString;
+        notificationTextLocalize.RefreshString();
+        StartCoroutine(DisplayNotification(3f));
     }
 
     public void ShowBossDefeated()
     {
-        StartCoroutine(DisplayNotification("Boss Defeated!", 3f));
+        notificationTextLocalize.StringReference = bossDefeatedString;
+        notificationTextLocalize.RefreshString();
+        StartCoroutine(DisplayNotification(3f));
     }
 
-    private IEnumerator DisplayNotification(string message, float duration)
+    private IEnumerator DisplayNotification(float duration)
     {
-        notificationText.text = message;
         notificationText.gameObject.SetActive(true);
         yield return new WaitForSeconds(duration);
         notificationText.gameObject.SetActive(false);

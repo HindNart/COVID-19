@@ -7,7 +7,7 @@ public class BossVirus : VirusBase
 {
     // [SerializeField] private GameObject bossBulletPrefab;
     public static UnityEvent onBossDefeated = new UnityEvent();
-    [SerializeField] private GameObject minionPrefab; // BasicVirus prefab
+    [SerializeField] private GameObject[] minionPrefabs; // BasicVirus prefabs
     // [SerializeField] private float shootInterval = 3f;
     [SerializeField] private float minionSpawnInterval = 15f;
     // [SerializeField] private float bulletSpeed = 5f;
@@ -29,6 +29,11 @@ public class BossVirus : VirusBase
         // nextShootTime = Time.time + shootInterval;
         nextMinionSpawnTime = Time.time + minionSpawnInterval;
         spriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("BossSpawn");
+        }
     }
 
     protected override void Update()
@@ -78,12 +83,12 @@ public class BossVirus : VirusBase
 
     private IEnumerator SpawnMinions()
     {
-        if (pool == null || minionPrefab == null) yield return null;
+        if (pool == null || minionPrefabs == null || target == null) yield return null;
 
         int minionCount = Random.Range(10, 15); // 10-15 minion
         for (int i = 0; i < minionCount; i++)
         {
-            GameObject minion = pool.Get(minionPrefab);
+            GameObject minion = pool.Get(minionPrefabs[Random.Range(0, minionPrefabs.Length)]);
             Vector2 spawnOffset = Random.insideUnitCircle * 3f;
             minion.transform.position = (Vector2)transform.position + spawnOffset;
             minion.GetComponent<BasicVirus>().Initialize(50, 1, 1.5f, target, pool); // Minion yếu

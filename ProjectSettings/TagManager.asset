@@ -50,7 +50,7 @@ TagManager:
   - name: bullet
     uniqueID: 1407290231
     locked: 0
-  - name: viruss
+  - name: virus
     uniqueID: 1378548213
     locked: 0
   - name: player

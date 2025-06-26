@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 9034462734095593653}
   - component: {fileID: 3111991672676860476}
   - component: {fileID: 1079028111606927558}
+  - component: {fileID: -7863561777380950594}
   m_Layer: 6
   m_Name: corona-5
   m_TagString: Virus
@@ -152,3 +153,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-7863561777380950594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2280009117409676858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a5239ec154b6e042804744db282dc8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  deathEffectPrefab: {fileID: 5058648717534268900, guid: ed8e3c22571cfac4f81dd668b1071854, type: 3}
+  trailEffectPrefab: {fileID: 1216999879092924285, guid: 7a32e684be517fe48bba0bd2e64ecade, type: 3}

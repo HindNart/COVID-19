@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI_Strings Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: UI_Strings
+  m_TableCollectionNameGuidString: 9fde3cf85411380438ed81ddc63d9a8b
+  m_Entries:
+  - m_Id: 257573310464
+    m_Key: PlayBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 318503964672
+    m_Key: QuitBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 367782842368
+    m_Key: AntibodyTxt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 688684847104
+    m_Key: WaveTxt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 792133160960
+    m_Key: UpgradeCost_CanUpgrade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1297651650560
+    m_Key: UpgradeCost_NotEnough
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1402651856896
+    m_Key: Notification_BossIncoming
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1457404301312
+    m_Key: Notification_BossDefeated
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1765870194688
+    m_Key: Notification_WaveStarting
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2063145684992
+    m_Key: GameOverMessage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2436841394176
+    m_Key: RestartBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2773048414208
+    m_Key: PauseTxt
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2903680012288
+    m_Key: ContinueBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3137390825472
+    m_Key: BackBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7953953378304
+    m_Key: LanguageBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8164209643520
+    m_Key: EnglishBtn
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8264369623040
+    m_Key: VietnameseBtn
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 7114184973957202234
+  references:
+    version: 2
+    RefIds:
+    - rid: 7114184973957202234
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1750929497944

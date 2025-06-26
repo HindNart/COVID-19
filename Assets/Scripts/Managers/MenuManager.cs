@@ -7,15 +7,27 @@ using UnityEngine.EventSystems;
 public class MenuManager : MonoBehaviour
 {
     [SerializeField] private Button playButton;
+    [SerializeField] private Button languageButton;
     [SerializeField] private Button quitButton;
+    [SerializeField] private GameObject languagePanel;
     [SerializeField] private string gameSceneName = "Game";
 
     private void Start()
     {
+        if (languagePanel != null)
+        {
+            languagePanel.SetActive(false);
+        }
+
         if (playButton != null)
         {
             playButton.onClick.AddListener(OnPlayButtonClicked);
             SetupButtonAnimation(playButton);
+        }
+        if (languageButton != null)
+        {
+            languageButton.onClick.AddListener(OnLanguageButtonClicked);
+            SetupButtonAnimation(languageButton);
         }
         if (quitButton != null)
         {
@@ -37,6 +49,23 @@ public class MenuManager : MonoBehaviour
         }
 
         SceneManager.LoadScene(gameSceneName);
+    }
+
+    private void OnLanguageButtonClicked()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("ButtonClick");
+        }
+
+        if (languagePanel != null)
+        {
+            languagePanel.SetActive(!languagePanel.activeSelf);
+        }
+        else
+        {
+            Debug.LogWarning("Language panel is not assigned in the inspector.");
+        }
     }
 
     private void OnQuitButtonClicked()

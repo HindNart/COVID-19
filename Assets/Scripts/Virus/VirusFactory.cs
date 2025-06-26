@@ -6,7 +6,7 @@ public class VirusFactory : MonoBehaviour
     [SerializeField] private GameObject intermediateVirusPrefab;
     [SerializeField] private GameObject advancedVirusPrefab;
     [SerializeField] private GameObject omicronVirusPrefab;
-    [SerializeField] private GameObject bossVirusPrefab;
+    [SerializeField] private GameObject[] bossVirusPrefabs;
     [SerializeField] private Transform player;
     [SerializeField] private ObjectPool objectPool;
 
@@ -31,7 +31,7 @@ public class VirusFactory : MonoBehaviour
         // wave boss
         if (wave % 10 == 0)
         {
-            virusObj = objectPool.Get(bossVirusPrefab);
+            virusObj = objectPool.Get(bossVirusPrefabs[Random.Range(0, bossVirusPrefabs.Length)]);
             virus = virusObj.GetComponent<BossVirus>();
             baseHp *= 50;
             basePoints *= 2f;

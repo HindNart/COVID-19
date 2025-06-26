@@ -103,11 +103,6 @@ public class WaveManager : MonoBehaviour
 
         if (CurrentWave % 10 == 0)
         {
-            if (AudioManager.Instance != null)
-            {
-                AudioManager.Instance.PlaySFX("BossSpawn");
-            }
-
             OnBossSpawned?.Invoke();
         }
 
