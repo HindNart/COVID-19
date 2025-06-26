@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - Virus
+  - Bullet
+  - PowerUp
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Player
+  - Water
+  - UI
+  - Virus
+  - PowerUp
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: effs
+    uniqueID: 4153858947
+    locked: 0
+  - name: bullet
+    uniqueID: 1407290231
+    locked: 0
+  - name: virus
+    uniqueID: 1378548213
+    locked: 0
+  - name: player
+    uniqueID: 3968208595
+    locked: 0
+  - name: ui
+    uniqueID: 2458654375
+    locked: 0
+  m_RenderingLayers:
+  - Default

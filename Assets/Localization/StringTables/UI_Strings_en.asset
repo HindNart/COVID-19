@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_Strings_en
+  m_EditorClassIdentifier: 
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 9fde3cf85411380438ed81ddc63d9a8b, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 257573310464
+    m_Localized: Play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 318503964672
+    m_Localized: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 367782842368
+    m_Localized: 'Antibodies: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 688684847104
+    m_Localized: 'Wave: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 792133160960
+    m_Localized: 'Upgrade (Click Earth): {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1297651650560
+    m_Localized: 'Upgrade (Not Enough): {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1402651856896
+    m_Localized: Boss Incoming!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1457404301312
+    m_Localized: Boss Defeated!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1765870194688
+    m_Localized: Wave Starting!
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2063145684992
+    m_Localized: The Earth has been infected with COVID (T_T)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2436841394176
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2773048414208
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2903680012288
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 3137390825472
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 7953953378304
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8164209643520
+    m_Localized: English
+    m_Metadata:
+      m_Items: []
+  - m_Id: 8264369623040
+    m_Localized: Vietnamese
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
