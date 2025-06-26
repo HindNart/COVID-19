@@ -837,6 +837,10 @@ MonoBehaviour:
   gameOverPanel: {fileID: 2022728460}
   restartButton: {fileID: 2011004148}
   playerHPSlider: {fileID: 721100131}
+  pauseMenuCanvas: {fileID: 1766179614}
+  resumeButton: {fileID: 2017893098}
+  mainMenuButton: {fileID: 1340625106}
+  pauseFadeDuration: 0.3
   player: {fileID: 1345122986}
   antibodiesString:
     m_TableReference:
@@ -1647,8 +1651,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60
-  m_fontSizeBase: 60
+  m_fontSize: 50
+  m_fontSizeBase: 50
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2521,7 +2525,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5568628, g: 0.6, b: 0.7176471, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2718,7 +2722,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 350, y: 100}
+  m_SizeDelta: {x: 350, y: 90}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1548279595
 MonoBehaviour:
@@ -2733,7 +2737,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.5568628, g: 0.6, b: 0.7176471, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3182,13 +3186,14 @@ GameObject:
   - component: {fileID: 1766179615}
   - component: {fileID: 1766179617}
   - component: {fileID: 1766179616}
+  - component: {fileID: 1766179618}
   m_Layer: 5
   m_Name: PausePanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1766179615
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3248,6 +3253,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1766179614}
   m_CullTransparentMesh: 1
+--- !u!225 &1766179618
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1766179614}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &1902039363
 GameObject:
   m_ObjectHideFlags: 0
@@ -3502,7 +3519,7 @@ GameObject:
   - component: {fileID: 2017893099}
   - component: {fileID: 2017893098}
   m_Layer: 5
-  m_Name: ContinueBtn
+  m_Name: ResumeBtn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

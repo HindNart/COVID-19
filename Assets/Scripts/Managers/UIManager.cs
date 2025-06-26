@@ -17,6 +17,11 @@ public class UIManager : MonoBehaviour
     [SerializeField] private GameObject gameOverPanel;
     [SerializeField] private Button restartButton;
     [SerializeField] private Slider playerHPSlider;
+    [SerializeField] private GameObject pauseMenuCanvas;
+    [SerializeField] private Button resumeButton;
+    [SerializeField] private Button mainMenuButton;
+    [SerializeField] private float pauseFadeDuration = 0.3f;
+
     [SerializeField] private PlayerController player;
 
     [SerializeField] private LocalizedString antibodiesString;
@@ -32,6 +37,9 @@ public class UIManager : MonoBehaviour
     private LocalizeStringEvent upgradeCostTextLocalize;
     private LocalizeStringEvent notificationTextLocalize;
 
+    private CanvasGroup pauseMenuCanvasGroup;
+    private bool isPaused;
+
     private void Start()
     {
         // Gán LocalizedString vào LocalizeStringEvent
@@ -39,6 +47,18 @@ public class UIManager : MonoBehaviour
         waveTextLocalize = waveText.GetComponent<LocalizeStringEvent>();
         upgradeCostTextLocalize = upgradeCostText.GetComponent<LocalizeStringEvent>();
         notificationTextLocalize = notificationText.GetComponent<LocalizeStringEvent>();
+
+        // Khởi tạo CanvasGroup cho pause menu
+        if (pauseMenuCanvas != null)
+        {
+            pauseMenuCanvasGroup = pauseMenuCanvas.GetComponent<CanvasGroup>();
+            if (pauseMenuCanvasGroup == null)
+            {
+                pauseMenuCanvasGroup = pauseMenuCanvas.AddComponent<CanvasGroup>();
+            }
+            pauseMenuCanvasGroup.alpha = 0f;
+            pauseMenuCanvas.SetActive(false);
+        }
 
         // Khởi tạo UI
         UpdateHP(GameManager.Instance.PlayerHP);
@@ -60,8 +80,24 @@ public class UIManager : MonoBehaviour
         WaveManager.Instance.OnBossSpawned.AddListener(ShowBossWarning);
         BossVirus.onBossDefeated.AddListener(ShowBossDefeated);
 
-        // upgradeButton.onClick.AddListener(OnUpgradeButtonClicked);
-        restartButton.onClick.AddListener(RestartGame);
+        if (resumeButton != null) resumeButton.onClick.AddListener(ResumeGame);
+        if (mainMenuButton != null) mainMenuButton.onClick.AddListener(ReturnToMainMenu);
+        if (restartButton != null) restartButton.onClick.AddListener(RestartGame);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isPaused)
+            {
+                ResumeGame();
+            }
+            else
+            {
+                PauseGame();
+            }
+        }
     }
 
     private void UpdateHP(int hp)
@@ -156,6 +192,55 @@ public class UIManager : MonoBehaviour
         notificationText.gameObject.SetActive(true);
         yield return new WaitForSeconds(duration);
         notificationText.gameObject.SetActive(false);
+    }
+
+    private void PauseGame()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("ButtonClick");
+        }
+
+        if (pauseMenuCanvas == null) return;
+
+        isPaused = true;
+        Time.timeScale = 0f;
+        pauseMenuCanvas.SetActive(true);
+        pauseMenuCanvasGroup.DOFade(1f, pauseFadeDuration).SetUpdate(true);
+    }
+
+    private void ResumeGame()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("ButtonClick");
+        }
+
+        if (pauseMenuCanvas == null) return;
+
+        pauseMenuCanvasGroup.DOFade(0f, pauseFadeDuration).SetUpdate(true).OnComplete(() =>
+        {
+            pauseMenuCanvas.SetActive(false);
+            Time.timeScale = 1f;
+            isPaused = false;
+        });
+    }
+
+    private void ReturnToMainMenu()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX("ButtonClick");
+        }
+
+        pauseMenuCanvasGroup.DOFade(0f, pauseFadeDuration).SetUpdate(true).OnComplete(() =>
+        {
+            Time.timeScale = 1f;
+            if (GameManager.Instance != null) Destroy(GameManager.Instance.gameObject);
+            if (WaveManager.Instance != null) Destroy(WaveManager.Instance.gameObject);
+            if (AudioManager.Instance != null) Destroy(AudioManager.Instance.gameObject);
+            SceneManager.LoadScene("Menu");
+        });
     }
 
     private void RestartGame()

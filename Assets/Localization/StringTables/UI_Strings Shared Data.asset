@@ -64,7 +64,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2903680012288
-    m_Key: ContinueBtn
+    m_Key: ResumeBtn
     m_Metadata:
       m_Items: []
   - m_Id: 3137390825472
